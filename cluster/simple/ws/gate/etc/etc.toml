@@ -1,5 +1,5 @@
 # 进程号
-pid = "./run/gate.pid"
+pid = "./run/due.pid"
 # 开发模式。支持模式：debug、test、release（设置优先级：配置文件 < 环境变量 < 运行参数 < mode.SetMode()）
 mode = "debug"
 # 统一时区设置。项目中的时间获取请使用xtime.Now()
@@ -8,14 +8,22 @@ timezone = "Local"
 shutdownMaxWaitTime = "0s"
 
 [cluster.gate]
-    # 实例ID，网关集群中唯一。不填写默认自动生成唯一的实例ID
+    # 实例ID，集群中唯一。不填写默认自动生成唯一的实例ID
     id = ""
     # 实例名称
     name = "gate"
     # 内建RPC服务器监听地址。不填写默认随机监听
     addr = ":0"
-    # RPC调用超时时间
-    timeout = "1s"
+    # 是否将内部通信地址暴露到公网。默认为false
+    expose = false
+    # RPC调用超时时间，支持单位：纳秒（ns）、微秒（us | µs）、毫秒（ms）、秒（s）、分（m）、小时（h）、天（d）。默认为3s
+    timeout = "3s"
+    # 无状态路由消息分发策略。支持策略：随机（random）、轮询（rr）、加权轮询（wrr）。默认为random
+    dispatch = "random"
+    # 实例元数据
+    [cluster.gate.metadata]
+        # 键值对，且均为字符串类型。由于注册中心的元数据参数限制，建议将键值对的数量控制在20个以内，键的字符长度控制在127个字符内，值得字符长度控制在512个字符内。
+        key = "value"
 
 [locate.redis]
     # 客户端连接地址
@@ -26,24 +34,32 @@ shutdownMaxWaitTime = "0s"
     username = ""
     # 密码
     password = ""
+    # 私钥文件
+    keyFile = ""
+    # 证书文件
+    certFile = ""
+    # CA证书文件
+    caFile = ""
     # 最大重试次数
     maxRetries = 3
     # key前缀
-    prefix = "due"
+    prefix = "due:locate"
 
-[registry.etcd]
-    # 客户端连接地址，默认为["127.0.0.1:2379"]
-    addrs = ["127.0.0.1:2379"]
-    # 客户端拨号超时时间，支持单位：纳秒（ns）、微秒（us | µs）、毫秒（ms）、秒（s）、分（m）、小时（h）、天（d）。默认为5s
-    dialTimeout = "5s"
-    # 命名空间，默认为services
-    namespace = "services"
-    # 超时时间，支持单位：纳秒（ns）、微秒（us | µs）、毫秒（ms）、秒（s）、分（m）、小时（h）、天（d）。默认为3s
-    timeout = "3s"
-    # 心跳重试次数，默认为3
-    retryTimes = 3
-    # 心跳重试间隔，支持单位：纳秒（ns）、微秒（us | µs）、毫秒（ms）、秒（s）、分（m）、小时（h）、天（d）。默认为10s
-    retryInterval = "10s"
+[registry.consul]
+    # 客户端连接地址，默认为127.0.0.1:8500
+    addr = "127.0.0.1:8500"
+    # 是否启用健康检查，默认为true
+    healthCheck = true
+    # 健康检查时间间隔（秒），仅在启用健康检查后生效，默认为10
+    healthCheckInterval = 10
+    # 健康检查超时时间（秒），仅在启用健康检查后生效，默认为5
+    healthCheckTimeout = 5
+    # 是否启用心跳检查，默认为true
+    heartbeatCheck = true
+    # 心跳检查时间间隔（秒），仅在启用心跳检查后生效，默认为10
+    heartbeatCheckInterval = 10
+    # 健康检测失败后自动注销服务时间（秒），默认为30
+    deregisterCriticalServiceAfter = 30
 
 [network.ws.server]
     # 服务器监听地址
@@ -64,8 +80,6 @@ shutdownMaxWaitTime = "0s"
     heartbeatInterval = "10s"
     # 心跳机制，默认为resp响应式心跳。可选：resp 响应式心跳 | tick 定时主推心跳
     heartbeatMechanism = "resp"
-    # 下行心跳是否携带服务器时间，默认为true
-    heartbeatWithServerTime = true
     # 授权超时时间，（在客户端建立连接后，如果在授权超时时间内未进行绑定用户操作，则被认定为未授权连接，服务器会强制断开连接）支持单位：纳秒（ns）、微秒（us | µs）、毫秒（ms）、秒（s）、分（m）、小时（h）、天（d）。默认为0s，不进行授权检测
     authorizeTimeout = "0s"
 
@@ -73,34 +87,74 @@ shutdownMaxWaitTime = "0s"
     # 字节序，默认为big。可选：little | big
     byteOrder = "big"
     # 路由字节数，默认为2字节
-    routeBytes = 4
+    routeBytes = 2
     # 序列号字节数，默认为2字节
-    seqBytes = 0
+    seqBytes = 2
     # 消息字节数，默认为5000字节
-    bufferBytes = 100000
+    bufferBytes = 5000
     # 是否携带服务器心跳时间
-    heartbeatTime = true
+    heartbeatTime = false
 
 [log]
-    # 日志输出文件
-    file = "./log/due.log"
     # 日志输出级别，可选：debug | info | warn | error | fatal | panic
-    level = "debug"
-    # 日志输出格式，可选：text | json
-    format = "text"
-    # 是否输出到终端
-    stdout = true
-    # 时间格式，标准库时间格式
-    timeFormat = "2006/01/02 15:04:05.000000"
+    level = "info"
     # 堆栈的最低输出级别，可选：debug | info | warn | error | fatal | panic
     stackLevel = "error"
-    # 文件最大留存时间，d:天、h:时、m:分、s:秒
-    fileMaxAge = "7d"
-    # 文件最大尺寸限制，单位（MB）
-    fileMaxSize = 100
-    # 文件切割方式
-    fileCutRule = "day"
+    # 时间格式，标准库时间格式
+    timeFormat = "2006/01/02 15:04:05.000000"
+    # 输出栈的跳过深度
+    callSkip = 2
     # 是否启用调用文件全路径
-    callerFullPath = true
-    # 是否启用分级存储
-    classifiedStorage = false
+    callFullPath = true
+    # 日志输出终端
+    terminals = ["console", "file"]
+    # 控制台同步器配置
+    [log.console]
+        # 日志输出格式，可选：text | json
+        format = "text"
+    # 文件同步器配置
+    [log.file]
+        # 输出文件路径
+        path = "./log/due.log"
+        # 日志输出格式，可选：text | json
+        format = "text"
+        # 文件最大留存时间，d:天、h:时、m:分、s:秒
+        maxAge = "7d"
+        # 文件最大尺寸限制，支持单位： B | K | KB | M | MB | G | GB | T | TB | P | PB | E | EB | Z | ZB，默认为100M
+        maxSize = "100M"
+        # 文件翻转方式，可选：none | year | month | week | day | hour，默认为none
+        rotate = "none"
+        # 文件翻转时是否对文件进行压缩
+        compress = false
+
+[registry.nacos]
+	# 服务器地址 [scheme://]ip:port[/nacos]。默认为["http://127.0.0.1:8848/nacos"]
+	urls = ["http://127.0.0.1:8848/nacos"]
+	# 集群名称。默认为DEFAULT
+	clusterName = "DEFAULT"
+	# 群组名称。默认为DEFAULT_GROUP
+	groupName = "DEFAULT_GROUP"
+	# 请求Nacos服务端超时时间，支持单位：纳秒（ns）、微秒（us | µs）、毫秒（ms）、秒（s）、分（m）、小时（h）、天（d）。默认为3秒
+	timeout = "3s"
+	# ACM的命名空间Id。默认为空
+	namespaceId = "game-coin-server"
+	# 当使用ACM时，需要该配置，默认为空。详见：https://help.aliyun.com/document_detail/130146.html
+	endpoint = ""
+	# ACM&KMS的regionId，用于配置中心的鉴权。默认为空
+	regionId = ""
+	# ACM&KMS的AccessKey，用于配置中心的鉴权。默认为空
+	accessKey = ""
+	# ACM&KMS的SecretKey，用于配置中心的鉴权。默认为空
+	secretKey = ""
+	# 是否开启kms，同时DataId必须以"cipher-"作为前缀才会启动加解密逻辑。kms可以参考文档：https://help.aliyun.com/product/28933.html
+	openKMS = false
+	# 缓存service信息的目录。默认为./run/nacos/naming/cache
+	cacheDir = "./run/nacos/naming/cache"
+	# Nacos服务端的API鉴权Username。默认为空
+	username = ""
+	# Nacos服务端的API鉴权Password。默认为空
+	password = ""
+	# 日志存储路径。默认为./run/nacos/naming/log
+	logDir = "./run/nacos/naming/log"
+	# 日志输出级别，可选：debug、info、warn、error。默认为info
+	logLevel = "info"

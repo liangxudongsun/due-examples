@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/dobyte/due/network/tcp/v2"
 	"github.com/dobyte/due/v2"
@@ -68,9 +67,9 @@ func greetHandler(ctx *client.Context) {
 
 	log.Info(res.Message)
 
-	time.AfterFunc(time.Second, func() {
-		pushMessage(ctx.Conn())
-	})
+	// time.AfterFunc(time.Second, func() {
+	// 	pushMessage(ctx.Conn())
+	// })
 }
 
 // 请求
