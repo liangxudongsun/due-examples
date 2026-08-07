@@ -48,7 +48,14 @@ func startHandler(proxy *client.Proxy) {
 
 // 连接建立处理器
 func connectHandler(conn *client.Conn) {
-	pushMessage(conn)
+	go func() {
+		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			pushMessage(conn)
+		}
+	}()
 }
 
 // 消息回复处理器
@@ -66,10 +73,6 @@ func helloHandler(ctx *client.Context) {
 	}
 
 	log.Info(res.Message)
-
-	time.AfterFunc(time.Second, func() {
-		pushMessage(ctx.Conn())
-	})
 }
 
 // 请求

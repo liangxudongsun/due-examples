@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dobyte/due/locate/redis/v2"
-	"github.com/dobyte/due/registry/etcd/v2"
+	"github.com/dobyte/due/registry/nacos/v2"
 	"github.com/dobyte/due/v2"
 	"github.com/dobyte/due/v2/cluster/node"
 	"github.com/dobyte/due/v2/codes"
@@ -21,7 +21,7 @@ func main() {
 	// 创建用户定位器
 	locator := redis.NewLocator()
 	// 创建服务发现
-	registry := etcd.NewRegistry()
+	registry := nacos.NewRegistry()
 	// 创建节点组件
 	component := node.NewNode(
 		node.WithLocator(locator),
@@ -63,6 +63,12 @@ func greetHandler(ctx node.Context) {
 
 	if err := ctx.Parse(req); err != nil {
 		log.Errorf("parse request message failed: %v", err)
+		res.Code = codes.InternalError.Code()
+		return
+	}
+
+	if err := ctx.BindGate(1); err != nil {
+		log.Errorf("bind gate failed: %v", err)
 		res.Code = codes.InternalError.Code()
 		return
 	}

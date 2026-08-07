@@ -5,7 +5,7 @@ import (
 
 	"github.com/dobyte/due-examples/cluster/service/grpc/internal/service/greeter/server"
 	"github.com/dobyte/due/locate/redis/v2"
-	"github.com/dobyte/due/registry/consul/v2"
+	"github.com/dobyte/due/registry/nacos/v2"
 	"github.com/dobyte/due/transport/grpc/v2"
 	"github.com/dobyte/due/v2"
 	"github.com/dobyte/due/v2/cluster/mesh"
@@ -19,7 +19,7 @@ func main() {
 	// 创建用户定位器
 	locator := redis.NewLocator()
 	// 创建服务发现
-	registry := consul.NewRegistry()
+	registry := nacos.NewRegistry()
 	// 创建RPC传输器
 	transporter := grpc.NewTransporter(grpc.WithServerOptions(ggrpc.ChainUnaryInterceptor(loggerInterceptor, authInterceptor)))
 	// 创建网格组件
