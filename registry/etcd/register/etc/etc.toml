@@ -5,9 +5,13 @@
     dialTimeout = "5s"
     # 命名空间，默认为services
     namespace = "services"
+    # 用户名
+    username = ""
+    # 密码
+    password = ""
     # 超时时间，支持单位：纳秒（ns）、微秒（us | µs）、毫秒（ms）、秒（s）、分（m）、小时（h）、天（d）。默认为3s
     timeout = "3s"
+    # 租约存活时间，支持单位：纳秒（ns）、微秒（us | µs）、毫秒（ms）、秒（s）、分（m）、小时（h）、天（d）。默认为15s
+    leaseTTL = "15s"
     # 心跳重试次数，默认为3
     retryTimes = 3
-    # 心跳重试间隔，支持单位：纳秒（ns）、微秒（us | µs）、毫秒（ms）、秒（s）、分（m）、小时（h）、天（d）。默认为10s
-    retryInterval = "10s"
