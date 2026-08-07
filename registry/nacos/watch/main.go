@@ -33,6 +33,8 @@ func watch(reg *nacos.Registry, serviceName string, goroutineID int) {
 	}
 
 	go func() {
+		log.Infof("goroutine %d: startup", goroutineID)
+
 		for {
 			services, err := watcher.Next()
 			if err != nil {
