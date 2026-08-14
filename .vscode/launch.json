@@ -317,6 +317,30 @@
             "cwd": "${workspaceFolder}/registry/nacos/watch/",
             "env": {},
             "args": []
+        },
+
+        // 注册中心：etcd注册
+        {
+            "name": "registry:etcd:register",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/registry/etcd/register/main.go",
+            "cwd": "${workspaceFolder}/registry/etcd/register/",
+            "env": {},
+            "args": []
+        },
+        
+        // 注册中心：etcd监听
+        {
+            "name": "registry:etcd:watch",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/registry/etcd/watch/main.go",
+            "cwd": "${workspaceFolder}/registry/etcd/watch/",
+            "env": {},
+            "args": []
         }
     ]
 }

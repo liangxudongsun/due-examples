@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"github.com/dobyte/due/registry/nacos/v2"
+	"github.com/dobyte/due/registry/consul/v2"
 	"github.com/dobyte/due/v2/log"
 	"github.com/dobyte/due/v2/utils/xconv"
 )
 
 func main() {
 	var (
-		reg  = nacos.NewRegistry()
+		reg  = consul.NewRegistry()
 		name = "game-server"
 	)
 
@@ -24,7 +24,7 @@ func main() {
 	select {}
 }
 
-func watch(reg *nacos.Registry, serviceName string, goroutineID int) {
+func watch(reg *consul.Registry, serviceName string, goroutineID int) {
 	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 	watcher, err := reg.Watch(ctx, serviceName)
 	cancel()

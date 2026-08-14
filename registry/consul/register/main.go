@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/dobyte/due/registry/nacos/v2"
+	"github.com/dobyte/due/registry/consul/v2"
 	"github.com/dobyte/due/v2/cluster"
 	"github.com/dobyte/due/v2/log"
 	"github.com/dobyte/due/v2/registry"
@@ -14,7 +14,7 @@ import (
 
 func main() {
 	var (
-		reg   = nacos.NewRegistry()
+		reg   = consul.NewRegistry()
 		id    = xuuid.UUID()
 		name  = "game-server"
 		alias = "mahjong"
